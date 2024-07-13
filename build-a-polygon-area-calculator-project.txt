@@ -1,0 +1,76 @@
+class Rectangle:
+  def __init__(self, width=0, height=0):
+    self.width = width
+    self.height = height
+
+  def __repr__(self):
+    arg_list = [f"{key}={val}" for key, val in vars(self).items()]
+    args = ", ".join(arg_list)
+    return f"{self.__class__.__name__}({args})"
+
+  def set_width(self, width):
+    self.width = width
+
+  def set_height(self, height):
+    self.height = height
+
+  def get_area(self):
+    return self.width * self.height
+
+  def get_perimeter(self):
+    return (2 * self.width + 2 * self.height)
+
+  def get_diagonal(self):
+    return ((self.width ** 2 + self.height ** 2) ** .5)
+
+  def get_picture(self):
+    if self.width > 50 or self.height > 50:
+      return "Too big for picture."
+    picture = ""
+    for i in range(self.height):
+      # if i == 0:
+      #   picture = "".ljust(self.width, '*')
+      # else:
+      #   picture += "\n" + "".ljust(self.width, '*')
+      picture += "".ljust(self.width, '*') + "\n"
+    return picture
+
+  def get_amount_inside(self, shape):
+    if type(shape) != type(self) and type(shape) != Square:
+      return NotImplemented
+    fit_count1 = (self.width // shape.width) * (self.height // shape.height)
+    fit_count2 = (self.width // shape.height) * (self.height // shape.width)
+    return max(fit_count1, fit_count2)
+
+class Square(Rectangle):
+  def __init__(self, side):
+    super().__init__(side, side)
+    self.side = side
+
+  def __repr__(self):
+    return f"{self.__class__.__name__}(side={self.side})"
+
+  def get_picture(self):
+    if self.width > 50 or self.height > 50:
+      return "Too big for picture."
+    picture = ""
+    for i in range(self.side):
+      # if i == 0:
+      #   picture = "".ljust(self.width, '*')
+      # else:
+      #   picture += "\n" + "".ljust(self.width, '*')
+      picture += "".ljust(self.side, '*') + "\n"
+    return picture
+
+  def set_side(self, side):
+    self.side = side
+
+  def set_width(self, width):
+    self.side = width
+    super().set_width(width)
+    super().set_height(width)
+
+  def set_height(self, height):
+    self.side = height
+    super().set_width(height)
+    super().set_height(height)

@@ -1,0 +1,86 @@
+def arithmetic_arranger(problems, show_answers=False):
+  # vars to build output
+  first_line = ""
+  second_line =""
+  dashes = ""
+  answers_line = ""
+  first_problem = True
+  # max problems is 5
+  if len(problems) > 5:
+    return 'Error: Too many problems.'
+  problems_clean = []
+  # sanity checks
+  for problem in problems:
+    # vars to build output
+    operator = ""
+    operand_left = ""
+    operand_right = ""
+    output = []
+    # remove all spaces
+    problem_temp = problem.replace(" ", "")
+    # check if it consists only one operator (+ or -)
+    plus_count = problem_temp.count('+')
+    min_count = problem_temp.count('-')
+    if plus_count + min_count < 1 or plus_count + min_count > 1:
+      return "Error: Operator must be '+' or '-'."
+    # check if operands only contain digits
+    if plus_count == 1:
+      operands = problem_temp.split('+')
+      operator = "+"
+    else:
+      operands = problem_temp.split('-')
+      operator = "-"
+    width = 0
+    for index, operand in enumerate(operands):
+      if operand.isdigit() is False:
+        return 'Error: Numbers must only contain digits.'
+      # check if operands only have four or less digits
+      if len(operand) < 1 or len(operand) > 4:
+        return 'Error: Numbers cannot be more than four digits.'
+      if len(operand) > width:
+        width = len(operand)
+      if index == 0:
+        operand_left = operand
+      else:
+        operand_right = operand
+    # get answer line
+    if plus_count == 1:
+      answer = int(operand_left) + int(operand_right)
+    else:
+      answer = int(operand_left) - int(operand_right)
+    width += 2
+    answer_len = len(str(answer))
+    if answer_len > width and show_answers:
+      width = answer_len + 1
+    # format the output
+    if first_problem:
+      first_line = operand_left.rjust(width)
+      second_line = operator + operand_right.rjust(width - 1)
+      dashes = ''.rjust(width, '-')
+      answers_line = str(answer).rjust(width)
+      first_problem = False
+    else:
+      first_line += '    ' + operand_left.rjust(width)
+      second_line += '    ' + operator + operand_right.rjust(width - 1)
+      dashes += '    ' + ''.rjust(width, '-')
+      answers_line += '    ' + str(answer).rjust(width)
+
+  output = first_line + "\n" + second_line + "\n" + dashes
+  # append answers if enabled
+  if show_answers:
+    output += "\n" + answers_line
+
+  return output
+
+
+print(f'{arithmetic_arranger(["3801 - 2", "123 + 49"])}')
+print(f'{arithmetic_arranger(["1 + 2", "1 - 9380"])}')
+print(f'{arithmetic_arranger(["3 + 855", "3801 - 2", "45 + 43", "123 + 49"])}')
+print(f'{arithmetic_arranger(["11 + 4", "3801 - 2999", "1 + 2", "123 + 49", "1 - 9380"])}')
+print(f'{arithmetic_arranger(["44 + 815", "909 - 2", "45 + 43", "123 + 49", "888 + 40", "653 + 87"])}')
+print(f'{arithmetic_arranger(["3 / 855", "3801 - 2", "45 + 43", "123 + 49"])}')
+print(f'{arithmetic_arranger(["24 + 85215", "3801 - 2", "45 + 43", "123 + 49"])}')
+print(f'{arithmetic_arranger(["98 + 3g5", "3801 - 2", "45 + 43", "123 + 49"])}')
+print(f'{arithmetic_arranger(["3 + 855", "988 + 40"], True)}')
+print(f'{arithmetic_arranger(["32 - 698", "1 - 3801", "45 + 43", "123 + 49", "988 + 40"], True)}')
+

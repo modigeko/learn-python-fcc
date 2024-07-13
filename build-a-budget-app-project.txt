@@ -1,0 +1,107 @@
+class Category:
+  def __init__(self, name):
+    self.name = name
+    self.balance = 0.0
+    self.ledger = []
+
+  def deposit(self, amount, description = ""):
+    self.ledger.append({"amount": amount, "description": description})
+    self.balance += amount
+
+  def withdraw(self, amount, description = ""):
+    if self.check_funds(amount):
+      self.ledger.append({"amount": -amount, "description": description})
+      self.balance -= amount
+      return True
+    else:
+      return False
+
+  def get_balance(self):
+    return self.balance
+
+  def transfer(self, amount, category):
+    if self.check_funds(amount):
+      self.withdraw(amount, f"Transfer to {category.name}")
+      category.deposit(amount, f"Transfer from {self.name}")
+      return True
+    else:
+      return False
+
+  def check_funds(self, amount):
+    if amount > self.balance:
+      return False
+    else:
+      return True
+
+  def __str__(self):
+    output = self.name.center(30, '*')
+    for entry in self.ledger:
+      output += "\n" + f"{entry['description'][:23]:<23}{entry['amount']:7.2f}"
+    output += "\n" + f"Total: {self.balance:.2f}"
+    return output
+
+def create_spend_chart(categories):
+    title = "Percentage spent by category"
+    # get total withdrawals from each category
+    spent_list = []
+    total_withdrawals = 0
+    for category in categories:
+      withdrawals = 0
+      for entry in category.ledger:
+        if entry['amount'] < 0:
+          withdrawals += entry['amount']
+      spent_list.append(abs(int(withdrawals)))
+    total_withdrawals = sum(spent_list)
+    percent_list = []
+    if total_withdrawals == 0:
+      percent_list = [0] * len(spent_list)
+    else:
+      percent_list = [(((item * 100) // total_withdrawals) // 10) * 10 for item in spent_list]
+
+    # print(spent_list, total_withdrawals, percent_list)
+    y_axis = ""
+    for i in range(100, -1, -10):
+      y_axis += f"\n{str(i):>3}| "
+      for category in percent_list:
+        if category >= i:
+          y_axis += "o  "
+        else:
+          y_axis += "   "
+    horizontal_line = "\n" + ' ' * 4 + "".center(len(categories) * 3 + 1, '-')
+
+    # return if the list is empty
+    if len(categories) < 1:
+      return title + y_axis + horizontal_line
+
+    # populate categories into a list
+    category_list = []
+    for category in categories:
+      category_list.append(category.name)
+
+    # get the longest length of the category name
+    max_length = max(len(s) for s in category_list)
+
+    # vertical_view list to hold each row
+    vertical_view = []
+
+    # num of spaces to add on the left side
+    left_padding = 5
+
+    # num of spaces after each element
+    spaces_after_element = 2
+
+    # populate the vertical_view list with rows
+    for i in range(max_length):
+        row = []
+        for category in category_list:
+            if i < len(category):
+                row.append(category[i])
+            else:
+                row.append(' ')
+        # Join characters with spaces and add padding
+        vertical_view.append(' ' * left_padding + '  '.join(row) + ' ' * spaces_after_element)
+
+    # Join all rows with newlines and print the result
+    x_axis = '\n' + '\n'.join(vertical_view)
+
+    return title + y_axis + horizontal_line + x_axis
